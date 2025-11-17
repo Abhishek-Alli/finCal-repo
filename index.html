@@ -1,0 +1,3058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinCalc Pro - Financial Calculator Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #764ba2;
+            --secondary: #667eea;
+            --accent: #ff7e5f;
+            --light: #f9f7ff;
+            --dark: #333;
+            --gray: #777;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+            min-height: 80vh;
+            padding: 40px 0;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Calculator Styles */
+        .calculator-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 10px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .calc-tab {
+            padding: 12px 25px;
+            background: transparent;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calc-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .calc-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            flex: 1;
+            min-width: 350px;
+            max-width: 500px;
+        }
+
+        .calculator h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.2);
+            outline: none;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            background: #5a3a7e;
+            transform: scale(1.1);
+        }
+
+        .results {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            height: 250px;
+            position: relative;
+        }
+
+        .chart {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: height 0.5s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* EMI Calculator Styles */
+        .emi-breakdown {
+            margin-top: 20px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eaeaea;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Content Pages */
+        .content-page {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .content-page h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .content-page p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .content-page ul, .content-page ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content-page li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Enhanced Comparison Section */
+        .comparison-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .comparison-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .comparison-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .comparison-chart {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .comparison-donut {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--primary) 0% 54%,
+                var(--accent) 54% 100%
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .donut-inner {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .donut-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .donut-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .comparison-stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .comparison-info {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-box {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-box.sip {
+            border-left-color: var(--primary);
+        }
+
+        .info-box.swp {
+            border-left-color: var(--accent);
+        }
+
+        .info-box h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box.swp h3 {
+            color: var(--accent);
+        }
+
+        .info-box p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .invest-now {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .invest-now h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .broker-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .broker-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .broker-btn:hover {
+            background: #5a3a7e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .broker-btn.zerodha {
+            background: #387ed1;
+        }
+
+        .broker-btn.angel {
+            background: #e53e3e;
+        }
+
+        .broker-btn.groww {
+            background: #00d09c;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 50px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .footer-logo {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-logo h2 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-column {
+            min-width: 150px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                padding: 20px;
+                border-radius: 0 0 15px 15px;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .calculator {
+                max-width: 100%;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+            
+            .broker-buttons {
+                flex-direction: column;
+            }
+            
+            .comparison-content {
+                flex-direction: column;
+            }
+            
+            .calculator-tabs {
+                flex-direction: column;
+                border-radius: 15px;
+            }
+            
+            .calc-tab {
+                border-radius: 10px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo" data-page="home">
+                <i class="fas fa-calculator"></i>
+                FinCalc Pro
+            </a>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#" class="nav-link active" data-page="home">Home</a>
+                <a href="#" class="nav-link" data-page="sip-calculator">SIP Calculator</a>
+                <a href="#" class="nav-link" data-page="swp-calculator">SWP Calculator</a>
+                <a href="#" class="nav-link" data-page="emi-calculator">EMI Calculator</a>
+                <a href="#" class="nav-link" data-page="retirement-planner">Retirement Planner</a>
+                <a href="#" class="nav-link" data-page="about">About Us</a>
+                <a href="#" class="nav-link" data-page="services">Services</a>
+                <a href="#" class="nav-link" data-page="blogs">Blogs</a>
+                <a href="#" class="nav-link" data-page="contact">Contact Us</a>
+                <a href="#" class="nav-link" data-page="privacy-policy">Privacy Policy</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Home Page -->
+    <section id="home" class="page active">
+        <div class="container">
+            <div class="page-header">
+                <h1>Financial Calculator Suite</h1>
+                <p>All-in-one financial planning tools for your investment and loan needs</p>
+            </div>
+
+            <div class="calculator-tabs">
+                <button class="calc-tab active" data-calc="investment">
+                    <i class="fas fa-chart-line"></i>
+                    Investment Calculators
+                </button>
+                <button class="calc-tab" data-calc="home-loan">
+                    <i class="fas fa-home"></i>
+                    Home Loan
+                </button>
+                <button class="calc-tab" data-calc="car-loan">
+                    <i class="fas fa-car"></i>
+                    Car Loan
+                </button>
+                <button class="calc-tab" data-calc="bike-loan">
+                    <i class="fas fa-motorcycle"></i>
+                    Bike Loan
+                </button>
+            </div>
+
+            <!-- Investment Calculators -->
+            <div class="calculator-container investment-calc">
+                <div class="calculator">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="sip">SIP Calculator</div>
+                        
+                    </div>
+
+                    <div class="tab-content active" id="sip">
+                        <h2><i class="fas fa-piggy-bank"></i> SIP Calculator</h2>
+                        
+                        <div class="input-group">
+                            <label for="sip-monthly">Monthly Investment (₹)</label>
+                            <input type="number" id="sip-monthly" value="25000" min="500" step="500">
+                            <div class="slider-container">
+                                <input type="range" id="sip-monthly-slider" class="slider" min="500" max="100000" value="25000" step="500">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="sip-return">Expected Return Rate (p.a)%</label>
+                            <input type="number" id="sip-return" value="12" min="1" max="30" step="0.1">
+                            <div class="slider-container">
+                                <input type="range" id="sip-return-slider" class="slider" min="1" max="30" value="12" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="sip-period">Time Period (Years)</label>
+                            <input type="number" id="sip-period" value="10" min="1" max="40" step="1">
+                            <div class="slider-container">
+                                <input type="range" id="sip-period-slider" class="slider" min="1" max="40" value="10" step="1">
+                            </div>
+                        </div>
+
+                        <div class="results">
+                            <div class="result-item">
+                                <span class="result-label">Invested Amount</span>
+                                <span class="result-value" id="sip-invested">₹30,00,000</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Est. Returns</span>
+                                <span class="result-value" id="sip-returns">₹26,00,897</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Total Value</span>
+                                <span class="result-value highlight" id="sip-total">₹56,00,897</span>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Investment Growth</h3>
+                            <div class="chart" id="sip-chart">
+                                <!-- Chart bars will be generated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Invested vs Returns</h3>
+                            <div class="chart" id="sip-donut-chart" style="position: relative; height: 300px; width: 100%;">
+                                <!-- Donut chart will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="swp">
+                        <h2><i class="fas fa-wallet"></i> SWP Calculator</h2>
+                        
+                        <div class="input-group">
+                            <label for="swp-investment">Initial Investment (₹)</label>
+                            <input type="number" id="swp-investment" value="5000000" min="100000" step="50000">
+                            <div class="slider-container">
+                                <input type="range" id="swp-investment-slider" class="slider" min="100000" max="50000000" value="5000000" step="50000">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="swp-monthly">Monthly Withdrawal (₹)</label>
+                            <input type="number" id="swp-monthly" value="50000" min="5000" step="5000">
+                            <div class="slider-container">
+                                <input type="range" id="swp-monthly-slider" class="slider" min="5000" max="500000" value="50000" step="5000">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="swp-return">Expected Return Rate (p.a)%</label>
+                            <input type="number" id="swp-return" value="8" min="1" max="30" step="0.1">
+                            <div class="slider-container">
+                                <input type="range" id="swp-return-slider" class="slider" min="1" max="30" value="8" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="swp-period">Time Period (Years)</label>
+                            <input type="number" id="swp-period" value="15" min="1" max="40" step="1">
+                            <div class="slider-container">
+                                <input type="range" id="swp-period-slider" class="slider" min="1" max="40" value="15" step="1">
+                            </div>
+                        </div>
+
+                        <div class="results">
+                            <div class="result-item">
+                                <span class="result-label">Total Withdrawals</span>
+                                <span class="result-value" id="swp-withdrawals">₹90,00,000</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Remaining Corpus</span>
+                                <span class="result-value" id="swp-remaining">₹42,00,000</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Total Returns</span>
+                                <span class="result-value highlight" id="swp-total">₹1,32,00,000</span>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Withdrawal Timeline</h3>
+                            <div class="chart" id="swp-chart">
+                                <!-- Chart bars will be generated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Initial Investment vs Returns</h3>
+                            <div class="chart" id="swp-donut-chart" style="position: relative; height: 300px; width: 100%;">
+                                <!-- Donut chart will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="invest-now">
+                        <h3>Start Investing Now</h3>
+                        <div class="broker-buttons">
+                            <a href="https://zerodha.com" target="_blank" class="broker-btn zerodha">
+                                <i class="fas fa-chart-line"></i>
+                                Zerodha
+                            </a>
+                            <a href="https://angelone.in" target="_blank" class="broker-btn angel">
+                                <i class="fas fa-bolt"></i>
+                                Angel One
+                            </a>
+                            <a href="https://groww.in" target="_blank" class="broker-btn groww">
+                                <i class="fas fa-seedling"></i>
+                                Groww
+                            </a>
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                            Use promo code: <strong>INVEST2024</strong> for special offers
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Comparison section removed -->
+            </div>
+
+            <!-- Home Loan Calculator -->
+            <div class="calculator-container home-loan-calc" style="display: none;">
+                <div class="calculator">
+                    <h2><i class="fas fa-home"></i> Home Loan Calculator</h2>
+                    
+                    <div class="input-group">
+                        <label for="home-price">Home Price (₹)</label>
+                        <input type="number" id="home-price" value="8000000" min="100000" step="100000">
+                        <div class="slider-container">
+                            <input type="range" id="home-price-slider" class="slider" min="100000" max="50000000" value="8000000" step="100000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="home-downpayment">Down Payment (₹)</label>
+                        <input type="number" id="home-downpayment" value="1600000" min="0" step="50000">
+                        <div class="slider-container">
+                            <input type="range" id="home-downpayment-slider" class="slider" min="0" max="8000000" value="1600000" step="50000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="home-loan-amount">Loan Amount (₹)</label>
+                        <input type="number" id="home-loan-amount" value="6400000" min="100000" step="100000" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="home-interest-rate">Interest Rate (p.a)%</label>
+                        <input type="number" id="home-interest-rate" value="8.5" min="1" max="20" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="home-interest-rate-slider" class="slider" min="1" max="20" value="8.5" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="home-loan-tenure">Loan Tenure (Years)</label>
+                        <input type="number" id="home-loan-tenure" value="20" min="1" max="30" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="home-loan-tenure-slider" class="slider" min="1" max="30" value="20" step="1">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Monthly EMI</span>
+                            <span class="result-value" id="home-emi">₹55,559</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Interest</span>
+                            <span class="result-value" id="home-total-interest">₹69,34,160</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Payment</span>
+                            <span class="result-value highlight" id="home-total-payment">₹1,33,34,160</span>
+                        </div>
+                    </div>
+
+                    <div class="emi-breakdown">
+                        <h3>Payment Breakdown</h3>
+                        <div class="breakdown-item">
+                            <span>Home Price</span>
+                            <span id="home-principal">₹80,00,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Down Payment</span>
+                            <span id="home-downpayment-display">₹16,00,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Loan Amount</span>
+                            <span id="home-loan-amount-display">₹64,00,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Interest Amount</span>
+                            <span id="home-interest">₹69,34,160</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Total Amount</span>
+                            <span class="highlight" id="home-total">₹1,33,34,160</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Principal vs Interest</h3>
+                        <div class="chart" id="home-chart" style="position: relative; height: 300px; width: 100%;">
+                            <!-- Donut chart will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculator">
+                    <h2><i class="fas fa-info-circle"></i> Home Loan Information</h2>
+                    <div class="results">
+                        <h3>Key Features</h3>
+                        <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                            <li>Long repayment tenure up to 30 years</li>
+                            <li>Tax benefits on principal and interest under Section 80C and 24</li>
+                            <li>Flexible repayment options</li>
+                            <li>Lower interest rates compared to other loans</li>
+                        </ul>
+                    </div>
+
+                    <div class="results" style="margin-top: 20px;">
+                        <h3>Documents Required</h3>
+                        <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                            <li>Identity Proof (Aadhaar, PAN, Passport)</li>
+                            <li>Address Proof</li>
+                            <li>Income Proof (Salary slips, ITR)</li>
+                            <li>Property Documents</li>
+                            <li>Bank Statements</li>
+                        </ul>
+                    </div>
+
+                    <div class="invest-now">
+                        <h3>Apply for Home Loan</h3>
+                        <div class="broker-buttons">
+                            <a href="#" class="broker-btn zerodha">
+                                <i class="fas fa-university"></i>
+                                HDFC Bank
+                            </a>
+                            <a href="#" class="broker-btn angel">
+                                <i class="fas fa-university"></i>
+                                SBI Home Loan
+                            </a>
+                            <a href="#" class="broker-btn groww">
+                                <i class="fas fa-university"></i>
+                                ICICI Bank
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Loan Calculator -->
+            <div class="calculator-container car-loan-calc" style="display: none;">
+                <div class="calculator">
+                    <h2><i class="fas fa-car"></i> Car Loan Calculator</h2>
+                    
+                    <div class="input-group">
+                        <label for="car-price">Car Price (₹)</label>
+                        <input type="number" id="car-price" value="1200000" min="100000" step="50000">
+                        <div class="slider-container">
+                            <input type="range" id="car-price-slider" class="slider" min="100000" max="5000000" value="1200000" step="50000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="car-downpayment">Down Payment (₹)</label>
+                        <input type="number" id="car-downpayment" value="240000" min="0" step="50000">
+                        <div class="slider-container">
+                            <input type="range" id="car-downpayment-slider" class="slider" min="0" max="1200000" value="240000" step="50000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="car-loan-amount">Loan Amount (₹)</label>
+                        <input type="number" id="car-loan-amount" value="960000" min="100000" step="50000" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="car-interest-rate">Interest Rate (p.a)%</label>
+                        <input type="number" id="car-interest-rate" value="9.5" min="1" max="20" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="car-interest-rate-slider" class="slider" min="1" max="20" value="9.5" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="car-loan-tenure">Loan Tenure (Years)</label>
+                        <input type="number" id="car-loan-tenure" value="5" min="1" max="7" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="car-loan-tenure-slider" class="slider" min="1" max="7" value="5" step="1">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Monthly EMI</span>
+                            <span class="result-value" id="car-emi">₹20,180</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Interest</span>
+                            <span class="result-value" id="car-total-interest">₹2,50,800</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Payment</span>
+                            <span class="result-value highlight" id="car-total-payment">₹12,10,800</span>
+                        </div>
+                    </div>
+
+                    <div class="emi-breakdown">
+                        <h3>Payment Breakdown</h3>
+                        <div class="breakdown-item">
+                            <span>Car Price</span>
+                            <span id="car-principal">₹12,00,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Down Payment</span>
+                            <span id="car-downpayment-display">₹2,40,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Loan Amount</span>
+                            <span id="car-loan-amount-display">₹9,60,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Interest Amount</span>
+                            <span id="car-interest">₹2,50,800</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Total Amount</span>
+                            <span class="highlight" id="car-total">₹14,50,800</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Principal vs Interest</h3>
+                        <div class="chart" id="car-chart" style="position: relative; height: 300px; width: 100%;">
+                            <!-- Donut chart will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculator">
+                    <h2><i class="fas fa-info-circle"></i> Car Loan Information</h2>
+                    <div class="results">
+                        <h3>Key Features</h3>
+                        <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                            <li>Quick approval and disbursal</li>
+                            <li>Flexible repayment tenure up to 7 years</li>
+                            <li>Competitive interest rates</li>
+                            <li>Minimal documentation required</li>
+                        </ul>
+                    </div>
+
+                    <div class="results" style="margin-top: 20px;">
+                        <h3>Documents Required</h3>
+                        <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                            <li>Identity Proof (Aadhaar, PAN, Driving License)</li>
+                            <li>Address Proof</li>
+                            <li>Income Proof (Salary slips, ITR)</li>
+                            <li>Bank Statements (last 3 months)</li>
+                        </ul>
+                    </div>
+
+                    <div class="invest-now">
+                        <h3>Apply for Car Loan</h3>
+                        <div class="broker-buttons">
+                            <a href="#" class="broker-btn zerodha">
+                                <i class="fas fa-university"></i>
+                                HDFC Bank
+                            </a>
+                            <a href="#" class="broker-btn angel">
+                                <i class="fas fa-university"></i>
+                                SBI Car Loan
+                            </a>
+                            <a href="#" class="broker-btn groww">
+                                <i class="fas fa-university"></i>
+                                ICICI Bank
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bike Loan Calculator -->
+            <div class="calculator-container bike-loan-calc" style="display: none;">
+                <div class="calculator">
+                    <h2><i class="fas fa-motorcycle"></i> Bike Loan Calculator</h2>
+                    
+                    <div class="input-group">
+                        <label for="bike-price">Bike Price (₹)</label>
+                        <input type="number" id="bike-price" value="200000" min="20000" step="10000">
+                        <div class="slider-container">
+                            <input type="range" id="bike-price-slider" class="slider" min="20000" max="500000" value="200000" step="10000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bike-downpayment">Down Payment (₹)</label>
+                        <input type="number" id="bike-downpayment" value="40000" min="0" step="10000">
+                        <div class="slider-container">
+                            <input type="range" id="bike-downpayment-slider" class="slider" min="0" max="200000" value="40000" step="10000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bike-loan-amount">Loan Amount (₹)</label>
+                        <input type="number" id="bike-loan-amount" value="160000" min="20000" step="10000" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bike-interest-rate">Interest Rate (p.a)%</label>
+                        <input type="number" id="bike-interest-rate" value="12.5" min="1" max="20" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="bike-interest-rate-slider" class="slider" min="1" max="20" value="12.5" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bike-loan-tenure">Loan Tenure (Years)</label>
+                        <input type="number" id="bike-loan-tenure" value="3" min="1" max="5" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="bike-loan-tenure-slider" class="slider" min="1" max="5" value="3" step="1">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Monthly EMI</span>
+                            <span class="result-value" id="bike-emi">₹5,358</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Interest</span>
+                            <span class="result-value" id="bike-total-interest">₹32,888</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Payment</span>
+                            <span class="result-value highlight" id="bike-total-payment">₹2,32,888</span>
+                        </div>
+                    </div>
+
+                    <div class="emi-breakdown">
+                        <h3>Payment Breakdown</h3>
+                        <div class="breakdown-item">
+                            <span>Bike Price</span>
+                            <span id="bike-principal">₹2,00,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Down Payment</span>
+                            <span id="bike-downpayment-display">₹40,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Loan Amount</span>
+                            <span id="bike-loan-amount-display">₹1,60,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Interest Amount</span>
+                            <span id="bike-interest">₹32,888</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Total Amount</span>
+                            <span class="highlight" id="bike-total">₹2,32,888</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Principal vs Interest</h3>
+                        <div class="chart" id="bike-chart" style="position: relative; height: 300px; width: 100%;">
+                            <!-- Donut chart will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculator">
+                    <h2><i class="fas fa-info-circle"></i> Bike Loan Information</h2>
+                    <div class="results">
+                        <h3>Key Features</h3>
+                        <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                            <li>Quick approval within hours</li>
+                            <li>Flexible repayment tenure up to 5 years</li>
+                            <li>Minimal documentation</li>
+                            <li>Competitive interest rates</li>
+                        </ul>
+                    </div>
+
+                    <div class="results" style="margin-top: 20px;">
+                        <h3>Documents Required</h3>
+                        <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.6;">
+                            <li>Identity Proof (Aadhaar, PAN, Driving License)</li>
+                            <li>Address Proof</li>
+                            <li>Income Proof (Salary slips for salaried, ITR for self-employed)</li>
+                            <li>Passport size photographs</li>
+                        </ul>
+                    </div>
+
+                    <div class="invest-now">
+                        <h3>Apply for Bike Loan</h3>
+                        <div class="broker-buttons">
+                            <a href="#" class="broker-btn zerodha">
+                                <i class="fas fa-university"></i>
+                                Bajaj Finance
+                            </a>
+                            <a href="#" class="broker-btn angel">
+                                <i class="fas fa-university"></i>
+                                HDFC Bank
+                            </a>
+                            <a href="#" class="broker-btn groww">
+                                <i class="fas fa-university"></i>
+                                ICICI Bank
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced comparison section removed -->
+        </div>
+    </section>
+
+    <!-- SIP Calculator Page -->
+    <section id="sip-calculator" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>SIP Calculator</h1>
+                <p>Calculate your potential returns from Systematic Investment Plans</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>What is SIP?</h2>
+                <p>A Systematic Investment Plan (SIP) is an investment strategy that allows you to invest a fixed amount regularly in mutual funds. Instead of investing a lump sum amount, you invest smaller amounts at regular intervals (monthly, quarterly, etc.).</p>
+                
+                <h2>Benefits of SIP</h2>
+                <ul>
+                    <li><strong>Disciplined Investing:</strong> SIP instills financial discipline by making you invest regularly.</li>
+                    <li><strong>Rupee Cost Averaging:</strong> You buy more units when prices are low and fewer units when prices are high.</li>
+                    <li><strong>Power of Compounding:</strong> Your returns generate more returns over time.</li>
+                    <li><strong>Flexibility:</strong> You can start, stop, or modify your SIP anytime.</li>
+                    <li><strong>Affordability:</strong> You can start with as low as ₹500 per month.</li>
+                </ul>
+                
+                <h2>How to Use This Calculator</h2>
+                <ol>
+                    <li>Enter your monthly investment amount</li>
+                    <li>Set your expected annual return rate</li>
+                    <li>Choose your investment period in years</li>
+                    <li>View your estimated returns and total value</li>
+                </ol>
+                
+                <div class="calculator">
+                    <h2><i class="fas fa-piggy-bank"></i> SIP Calculator</h2>
+                    
+                    <div class="input-group">
+                        <label for="sip-page-monthly">Monthly Investment (₹)</label>
+                        <input type="number" id="sip-page-monthly" value="10000" min="500" step="500">
+                        <div class="slider-container">
+                            <input type="range" id="sip-page-monthly-slider" class="slider" min="500" max="100000" value="10000" step="500">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sip-page-return">Expected Return Rate (p.a)%</label>
+                        <input type="number" id="sip-page-return" value="12" min="1" max="30" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="sip-page-return-slider" class="slider" min="1" max="30" value="12" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sip-page-period">Time Period (Years)</label>
+                        <input type="number" id="sip-page-period" value="10" min="1" max="40" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="sip-page-period-slider" class="slider" min="1" max="40" value="10" step="1">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Invested Amount</span>
+                            <span class="result-value" id="sip-page-invested">₹12,00,000</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Est. Returns</span>
+                            <span class="result-value" id="sip-page-returns">₹11,61,983</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Value</span>
+                            <span class="result-value highlight" id="sip-page-total">₹23,61,983</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SWP Calculator Page -->
+    <section id="swp-calculator" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>SWP Calculator</h1>
+                <p>Calculate your systematic withdrawals from your investment corpus</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>What is SWP?</h2>
+                <p>A Systematic Withdrawal Plan (SWP) is a facility that allows you to withdraw a fixed amount from your mutual fund investments at regular intervals. It's the reverse of a SIP and is typically used during retirement to generate a regular income.</p>
+                
+                <h2>Benefits of SWP</h2>
+                <ul>
+                    <li><strong>Regular Income:</strong> Provides a steady cash flow to meet your expenses.</li>
+                    <li><strong>Tax Efficiency:</strong> Only the gains portion of your withdrawal is taxable.</li>
+                    <li><strong>Flexibility:</strong> You can choose the withdrawal amount and frequency.</li>
+                    <li><strong>Capital Appreciation:</strong> Your remaining corpus continues to grow.</li>
+                    <li><strong>Financial Independence:</strong> Helps maintain your lifestyle without depleting your corpus quickly.</li>
+                </ul>
+                
+                <h2>How to Use This Calculator</h2>
+                <ol>
+                    <li>Enter your initial investment amount</li>
+                    <li>Set your expected annual return rate</li>
+                    <li>Choose your withdrawal amount and period</li>
+                    <li>View your total withdrawals and remaining corpus</li>
+                </ol>
+                
+                <div class="calculator">
+                    <h2><i class="fas fa-wallet"></i> SWP Calculator</h2>
+                    
+                    <div class="input-group">
+                        <label for="swp-page-investment">Initial Investment (₹)</label>
+                        <input type="number" id="swp-page-investment" value="5000000" min="100000" step="50000">
+                        <div class="slider-container">
+                            <input type="range" id="swp-page-investment-slider" class="slider" min="100000" max="50000000" value="5000000" step="50000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="swp-page-monthly">Monthly Withdrawal (₹)</label>
+                        <input type="number" id="swp-page-monthly" value="50000" min="5000" step="5000">
+                        <div class="slider-container">
+                            <input type="range" id="swp-page-monthly-slider" class="slider" min="5000" max="500000" value="50000" step="5000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="swp-page-return">Expected Return Rate (p.a)%</label>
+                        <input type="number" id="swp-page-return" value="8" min="1" max="30" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="swp-page-return-slider" class="slider" min="1" max="30" value="8" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="swp-page-period">Time Period (Years)</label>
+                        <input type="number" id="swp-page-period" value="15" min="1" max="40" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="swp-page-period-slider" class="slider" min="1" max="40" value="15" step="1">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Total Withdrawals</span>
+                            <span class="result-value" id="swp-page-withdrawals">₹90,00,000</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Remaining Corpus</span>
+                            <span class="result-value" id="swp-page-remaining">₹42,00,000</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Returns</span>
+                            <span class="result-value highlight" id="swp-page-total">₹1,32,00,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMI Calculator Page -->
+    <section id="emi-calculator" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>EMI Calculator</h1>
+                <p>Calculate your Equated Monthly Installments for various loans</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>What is EMI?</h2>
+                <p>EMI stands for Equated Monthly Installment. It is a fixed payment amount made by a borrower to a lender at a specified date each calendar month. EMIs are used to pay off both interest and principal each month, so that over a specified number of years, the loan is paid off in full.</p>
+                
+                <h2>EMI Calculation Formula</h2>
+                <p>The formula to calculate EMI is:</p>
+                <p><strong>EMI = [P x R x (1+R)^N] / [(1+R)^N-1]</strong></p>
+                <p>Where:</p>
+                <ul>
+                    <li><strong>P</strong> = Principal loan amount</li>
+                    <li><strong>R</strong> = Monthly interest rate (annual rate/12/100)</li>
+                    <li><strong>N</strong> = Loan tenure in months</li>
+                </ul>
+                
+                <h2>Factors Affecting EMI</h2>
+                <ul>
+                    <li><strong>Loan Amount:</strong> Higher loan amount means higher EMI</li>
+                    <li><strong>Interest Rate:</strong> Higher interest rate increases EMI</li>
+                    <li><strong>Loan Tenure:</strong> Longer tenure reduces EMI but increases total interest</li>
+                    <li><strong>Down Payment:</strong> Higher down payment reduces loan amount and EMI</li>
+                </ul>
+                
+                <div class="calculator">
+                    <h2><i class="fas fa-calculator"></i> EMI Calculator</h2>
+                    
+                    <div class="input-group">
+                        <label for="emi-page-loan-amount">Loan Amount (₹)</label>
+                        <input type="number" id="emi-page-loan-amount" value="500000" min="10000" step="10000">
+                        <div class="slider-container">
+                            <input type="range" id="emi-page-loan-amount-slider" class="slider" min="10000" max="10000000" value="500000" step="10000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="emi-page-interest-rate">Interest Rate (p.a)%</label>
+                        <input type="number" id="emi-page-interest-rate" value="10.5" min="1" max="30" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="emi-page-interest-rate-slider" class="slider" min="1" max="30" value="10.5" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="emi-page-loan-tenure">Loan Tenure (Years)</label>
+                        <input type="number" id="emi-page-loan-tenure" value="5" min="1" max="30" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="emi-page-loan-tenure-slider" class="slider" min="1" max="30" value="5" step="1">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Monthly EMI</span>
+                            <span class="result-value" id="emi-page-emi">₹10,748</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Interest</span>
+                            <span class="result-value" id="emi-page-total-interest">₹1,44,880</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Total Payment</span>
+                            <span class="result-value highlight" id="emi-page-total-payment">₹6,44,880</span>
+                        </div>
+                    </div>
+
+                    <div class="emi-breakdown">
+                        <h3>Payment Breakdown</h3>
+                        <div class="breakdown-item">
+                            <span>Principal Amount</span>
+                            <span id="emi-page-principal">₹5,00,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Interest Amount</span>
+                            <span id="emi-page-interest">₹1,44,880</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Total Amount</span>
+                            <span class="highlight" id="emi-page-total">₹6,44,880</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Principal vs Interest</h3>
+                        <div class="chart" id="emi-donut-chart" style="position: relative; height: 300px; width: 100%;">
+                            <!-- Donut chart will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Retirement Planner Page -->
+    <section id="retirement-planner" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Retirement Planner</h1>
+                <p>Plan your retirement corpus and monthly income needs</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>Retirement Planning</h2>
+                <p>Retirement planning is the process of determining retirement income goals and the actions and decisions necessary to achieve those goals. It includes identifying sources of income, estimating expenses, implementing a savings program, and managing assets.</p>
+                
+                <h2>Key Retirement Planning Steps</h2>
+                <ol>
+                    <li><strong>Set Retirement Goals:</strong> Determine when you want to retire and what lifestyle you want.</li>
+                    <li><strong>Calculate Retirement Corpus:</strong> Estimate how much money you'll need for retirement.</li>
+                    <li><strong>Assess Current Savings:</strong> Evaluate your current retirement savings and investments.</li>
+                    <li><strong>Create Savings Plan:</strong> Determine how much you need to save regularly to reach your goal.</li>
+                    <li><strong>Investment Strategy:</strong> Choose appropriate investment vehicles for your retirement corpus.</li>
+                    <li><strong>Regular Review:</strong> Periodically review and adjust your retirement plan.</li>
+                </ol>
+                
+                <div class="calculator">
+                    <h2><i class="fas fa-umbrella-beach"></i> Retirement Planner</h2>
+                    
+                    <div class="input-group">
+                        <label for="retirement-current-age">Current Age (Years)</label>
+                        <input type="number" id="retirement-current-age" value="30" min="18" max="65" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-current-age-slider" class="slider" min="18" max="65" value="30" step="1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="retirement-retirement-age">Retirement Age (Years)</label>
+                        <input type="number" id="retirement-retirement-age" value="60" min="40" max="75" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-retirement-age-slider" class="slider" min="40" max="75" value="60" step="1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="retirement-life-expectancy">Life Expectancy (Years)</label>
+                        <input type="number" id="retirement-life-expectancy" value="85" min="70" max="100" step="1">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-life-expectancy-slider" class="slider" min="70" max="100" value="85" step="1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="retirement-monthly-expenses">Current Monthly Expenses (₹)</label>
+                        <input type="number" id="retirement-monthly-expenses" value="50000" min="10000" step="5000">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-monthly-expenses-slider" class="slider" min="10000" max="500000" value="50000" step="5000">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="retirement-inflation">Expected Inflation Rate (p.a)%</label>
+                        <input type="number" id="retirement-inflation" value="6" min="1" max="10" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-inflation-slider" class="slider" min="1" max="10" value="6" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="retirement-return">Expected Return Rate (p.a)%</label>
+                        <input type="number" id="retirement-return" value="8" min="1" max="15" step="0.1">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-return-slider" class="slider" min="1" max="15" value="8" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="retirement-current-savings">Current Retirement Savings (₹)</label>
+                        <input type="number" id="retirement-current-savings" value="500000" min="0" step="50000">
+                        <div class="slider-container">
+                            <input type="range" id="retirement-current-savings-slider" class="slider" min="0" max="10000000" value="500000" step="50000">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="result-label">Retirement Corpus Needed</span>
+                            <span class="result-value" id="retirement-corpus">₹4,85,00,000</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Monthly Savings Required</span>
+                            <span class="result-value" id="retirement-monthly-savings">₹32,500</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Years to Retirement</span>
+                            <span class="result-value highlight" id="retirement-years">30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Page -->
+    <section id="about" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>About Us</h1>
+                <p>Learn more about FinCalc Pro and our mission</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>Our Story</h2>
+                <p>FinCalc Pro was founded in 2020 with a simple mission: to make financial planning accessible to everyone. We believe that everyone deserves the tools to make informed financial decisions, regardless of their background or expertise.</p>
+                
+                <p>Our team of financial experts, developers, and designers work together to create calculators that are both powerful and easy to use. We continuously update our tools to reflect the latest financial trends and regulations.</p>
+                
+                <h2>Our Mission</h2>
+                <p>To empower individuals with the knowledge and tools they need to achieve financial independence and security through accurate, easy-to-use financial calculators and educational resources.</p>
+                
+                <h2>Our Values</h2>
+                <ul>
+                    <li><strong>Accuracy:</strong> We ensure our calculators provide precise results based on current financial formulas.</li>
+                    <li><strong>Simplicity:</strong> We make complex financial concepts easy to understand and apply.</li>
+                    <li><strong>Transparency:</strong> We're open about how our calculators work and what assumptions they make.</li>
+                    <li><strong>Accessibility:</strong> We believe financial tools should be available to everyone, free of charge.</li>
+                </ul>
+                
+                <h2>Our Team</h2>
+                <p>Our diverse team includes certified financial planners, software engineers, UX designers, and content creators who are passionate about personal finance. We come from various backgrounds but share a common goal: to help people make better financial decisions.</p>
+                
+                <h2>Contact Information</h2>
+                <p>If you have any questions, suggestions, or feedback, please don't hesitate to reach out to us:</p>
+                <ul>
+                    <li><strong>Email:</strong> support@fincalcpro.com</li>
+                    <li><strong>Phone:</strong> +91-9876543210</li>
+                    <li><strong>Address:</strong> 123 Financial District, Mumbai, India - 400001</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Page -->
+    <section id="services" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Our Services</h1>
+                <p>Comprehensive financial planning tools and resources</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>Financial Calculators</h2>
+                <p>We offer a wide range of financial calculators to help you plan various aspects of your financial life:</p>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-piggy-bank"></i> SIP Calculator</h3>
+                    <p>Plan your systematic investments and see how small regular investments can grow into significant wealth over time through the power of compounding.</p>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-wallet"></i> SWP Calculator</h3>
+                    <p>Calculate how much you can withdraw regularly from your investment corpus while ensuring it lasts throughout your retirement years.</p>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-calculator"></i> EMI Calculator</h3>
+                    <p>Determine your equated monthly installments for home loans, car loans, personal loans, and other types of credit.</p>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-umbrella-beach"></i> Retirement Planner</h3>
+                    <p>Plan for your retirement by calculating how much corpus you'll need and how much you should save regularly to achieve it.</p>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-home"></i> Home Loan Calculator</h3>
+                    <p>Specifically designed for home loans with features like down payment calculation and property tax estimates.</p>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-car"></i> Car Loan Calculator</h3>
+                    <p>Calculate your car loan EMIs with options for different down payments and loan tenures.</p>
+                </div>
+                
+                <h2>Financial Education</h2>
+                <p>In addition to our calculators, we provide educational resources to help you understand financial concepts:</p>
+                <ul>
+                    <li><strong>Blog Articles:</strong> Regular posts on personal finance topics</li>
+                    <li><strong>Financial Guides:</strong> Comprehensive guides on specific financial topics</li>
+                    <li><strong>Video Tutorials:</strong> Step-by-step videos on using our calculators</li>
+                    <li><strong>Glossary:</strong> Definitions of financial terms</li>
+                </ul>
+                
+                <h2>Custom Solutions</h2>
+                <p>For businesses and financial advisors, we offer custom calculator solutions that can be integrated into your website or application. Contact us to learn more about our enterprise services.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blogs Page -->
+    <section id="blogs" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Blogs & Articles</h1>
+                <p>Latest insights and tips on personal finance</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>Recent Articles</h2>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-file-alt"></i> The Power of SIP: How Small Investments Can Create Big Wealth</h3>
+                    <p><small>Published on: October 15, 2023</small></p>
+                    <p>Discover how systematic investment plans can help you build significant wealth over time through disciplined investing and the power of compounding. Learn about the benefits of starting early and staying consistent with your investments.</p>
+                    <a href="#" class="broker-btn" style="display: inline-block; margin-top: 10px;">Read More</a>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-file-alt"></i> Understanding SWP: A Smart Way to Generate Retirement Income</h3>
+                    <p><small>Published on: October 10, 2023</small></p>
+                    <p>Learn how systematic withdrawal plans can provide you with a regular income during retirement while ensuring your corpus continues to grow. Understand the tax implications and how to optimize your withdrawals.</p>
+                    <a href="#" class="broker-btn" style="display: inline-block; margin-top: 10px;">Read More</a>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-file-alt"></i> Home Loan EMI Calculation: What You Need to Know</h3>
+                    <p><small>Published on: October 5, 2023</small></p>
+                    <p>Get insights into how home loan EMIs are calculated, factors that affect your EMI, and tips to reduce your home loan burden. Learn about prepayment options and how they can save you money.</p>
+                    <a href="#" class="broker-btn" style="display: inline-block; margin-top: 10px;">Read More</a>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-file-alt"></i> Retirement Planning: How Much Corpus Do You Really Need?</h3>
+                    <p><small>Published on: September 28, 2023</small></p>
+                    <p>Understand the key factors to consider when planning for retirement, including inflation, life expectancy, and lifestyle goals. Learn how to calculate your retirement corpus and create a savings plan.</p>
+                    <a href="#" class="broker-btn" style="display: inline-block; margin-top: 10px;">Read More</a>
+                </div>
+                
+                <div class="calculator" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-file-alt"></i> Tax Saving Investments: Beyond Section 80C</h3>
+                    <p><small>Published on: September 20, 2023</small></p>
+                    <p>Explore various tax-saving investment options beyond the traditional Section 80C deductions. Learn about ELSS, NPS, health insurance, and other tax-efficient investment strategies.</p>
+                    <a href="#" class="broker-btn" style="display: inline-block; margin-top: 10px;">Read More</a>
+                </div>
+                
+                <h2>Categories</h2>
+                <div class="broker-buttons">
+                    <a href="#" class="broker-btn">Investment</a>
+                    <a href="#" class="broker-btn">Retirement</a>
+                    <a href="#" class="broker-btn">Tax Planning</a>
+                    <a href="#" class="broker-btn">Loans</a>
+                    <a href="#" class="broker-btn">Insurance</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Us Page -->
+    <section id="contact" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Contact Us</h1>
+                <p>Get in touch with our team</p>
+            </div>
+            
+            <div class="content-page">
+                <h2>We'd Love to Hear From You</h2>
+                <p>Whether you have a question about our calculators, need assistance, or want to provide feedback, our team is here to help. Reach out to us using any of the methods below.</p>
+                
+                <div class="calculator-container">
+                    <div class="calculator">
+                        <h2><i class="fas fa-envelope"></i> Contact Information</h2>
+                        
+                        <div class="results">
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-envelope"></i> Email</span>
+                                <span class="result-value">support@fincalcpro.com</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-phone"></i> Phone</span>
+                                <span class="result-value">+91-9876543210</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-map-marker-alt"></i> Address</span>
+                                <span class="result-value">123 Financial District, Mumbai, India - 400001</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-clock"></i> Business Hours</span>
+                                <span class="result-value">Mon-Fri: 9AM-6PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calculator">
+                        <h2><i class="fas fa-paper-plane"></i> Send us a Message</h2>
+                        
+                        <div class="input-group">
+                            <label for="contact-name">Your Name</label>
+                            <input type="text" id="contact-name" placeholder="Enter your name">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="contact-email">Your Email</label>
+                            <input type="email" id="contact-email" placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="contact-subject">Subject</label>
+                            <input type="text" id="contact-subject" placeholder="Enter subject">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="contact-message">Message</label>
+                            <textarea id="contact-message" rows="5" placeholder="Enter your message" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; font-family: inherit;"></textarea>
+                        </div>
+                        
+                        <button class="broker-btn" style="width: 100%; margin-top: 20px;">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </div>
+                </div>
+                
+                <h2>Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How accurate are your calculators?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our calculators use standard financial formulas and are regularly updated to ensure accuracy. However, they provide estimates based on the inputs you provide and should be used for planning purposes only.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Do you store my financial data?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No, we do not store any of the financial data you enter into our calculators. All calculations are performed locally in your browser, and your data remains private.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Are your services really free?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, all our calculators and educational resources are completely free to use. We believe in making financial planning accessible to everyone.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I use your calculators on mobile devices?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! Our website is fully responsive and works perfectly on all devices including smartphones and tablets.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="privacy-policy" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Privacy Policy</h1>
+                <p>Last updated: November 17, 2025</p>
+            </div>
+            
+            <div class="content-page" style="max-width: 900px; margin: 40px auto;">
+                <p style="margin-bottom: 20px;">This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
+                
+                <p style="margin-bottom: 30px;">We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">Interpretation and Definitions</h2>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Interpretation</h3>
+                <p style="margin-bottom: 20px;">The words whose initial letters are capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Definitions</h3>
+                <p style="margin-bottom: 15px;">For the purposes of this Privacy Policy:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 10px;"><strong>Account</strong> means a unique account created for You to access our Service or parts of our Service.</li>
+                    <li style="margin-bottom: 10px;"><strong>Affiliate</strong> means an entity that controls, is controlled by, or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</li>
+                    <li style="margin-bottom: 10px;"><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to fincal.com.</li>
+                    <li style="margin-bottom: 10px;"><strong>Cookies</strong> are small files that are placed on Your computer, mobile device or any other device by a website, containing the details of Your browsing history on that website among its many uses.</li>
+                    <li style="margin-bottom: 10px;"><strong>Country</strong> refers to: Maharashtra, India</li>
+                    <li style="margin-bottom: 10px;"><strong>Device</strong> means any device that can access the Service such as a computer, a cell phone or a digital tablet.</li>
+                    <li style="margin-bottom: 10px;"><strong>Personal Data</strong> is any information that relates to an identified or identifiable individual.</li>
+                    <li style="margin-bottom: 10px;"><strong>Service</strong> refers to the Website.</li>
+                    <li style="margin-bottom: 10px;"><strong>Service Provider</strong> means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service, to provide the Service on behalf of the Company, to perform services related to the Service or to assist the Company in analyzing how the Service is used.</li>
+                    <li style="margin-bottom: 10px;"><strong>Usage Data</strong> refers to data collected automatically, either generated by the use of the Service or from the Service infrastructure itself (for example, the duration of a page visit).</li>
+                    <li style="margin-bottom: 10px;"><strong>Website</strong> refers to fincal.com, accessible from <a href="https://fincal.com/" target="_blank" style="color: var(--primary); text-decoration: none;">https://fincal.com/</a></li>
+                    <li><strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
+                </ul>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">Collecting and Using Your Personal Data</h2>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Types of Data Collected</h3>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">Personal Data</h4>
+                <p style="margin-bottom: 15px;">While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;">Email address</li>
+                    <li>Usage Data</li>
+                </ul>
+
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">Usage Data</h4>
+                <p style="margin-bottom: 15px;">Usage Data is collected automatically when using the Service.</p>
+                <p style="margin-bottom: 15px;">Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.</p>
+                <p style="margin-bottom: 15px;">When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device's unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.</p>
+                <p style="margin-bottom: 20px;">We may also collect information that Your browser sends whenever You visit Our Service or when You access the Service by or through a mobile device.</p>
+
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">Tracking Technologies and Cookies</h4>
+                <p style="margin-bottom: 15px;">We use Cookies and similar tracking technologies to track the activity on Our Service and store certain information. Tracking technologies We use include beacons, tags, and scripts to collect and track information and to improve and analyze Our Service. The technologies We use may include:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 10px;"><strong>Cookies or Browser Cookies.</strong> A cookie is a small file placed on Your Device. You can instruct Your browser to refuse all Cookies or to indicate when a Cookie is being sent. However, if You do not accept Cookies, You may not be able to use some parts of our Service. Unless you have adjusted Your browser setting so that it will refuse Cookies, our Service may use Cookies.</li>
+                    <li><strong>Web Beacons.</strong> Certain sections of our Service and our emails may contain small electronic files known as web beacons (also referred to as clear gifs, pixel tags, and single-pixel gifs) that permit the Company, for example, to count users who have visited those pages or opened an email and for other related website statistics (for example, recording the popularity of a certain section and verifying system and server integrity).</li>
+                </ul>
+                
+                <p style="margin-bottom: 15px;">Cookies can be "Persistent" or "Session" Cookies. Persistent Cookies remain on Your personal computer or mobile device when You go offline, while Session Cookies are deleted as soon as You close Your web browser.</p>
+                <p style="margin-bottom: 15px;">We use both Session and Persistent Cookies for the purposes set out below:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 15px;">
+                        <strong>Necessary / Essential Cookies</strong>
+                        <div style="margin-top: 5px; margin-left: 10px; font-size: 0.95rem;">
+                            <p style="margin-bottom: 5px;"><strong>Type:</strong> Session Cookies</p>
+                            <p style="margin-bottom: 5px;"><strong>Administered by:</strong> Us</p>
+                            <p><strong>Purpose:</strong> These Cookies are essential to provide You with services available through the Website and to enable You to use some of its features. They help to authenticate users and prevent fraudulent use of user accounts. Without these Cookies, the services that You have asked for cannot be provided, and We only use these Cookies to provide You with those services.</p>
+                        </div>
+                    </li>
+                    <li style="margin-bottom: 15px;">
+                        <strong>Cookies Policy / Notice Acceptance Cookies</strong>
+                        <div style="margin-top: 5px; margin-left: 10px; font-size: 0.95rem;">
+                            <p style="margin-bottom: 5px;"><strong>Type:</strong> Persistent Cookies</p>
+                            <p style="margin-bottom: 5px;"><strong>Administered by:</strong> Us</p>
+                            <p><strong>Purpose:</strong> These Cookies identify if users have accepted the use of cookies on the Website.</p>
+                        </div>
+                    </li>
+                    <li style="margin-bottom: 15px;">
+                        <strong>Functionality Cookies</strong>
+                        <div style="margin-top: 5px; margin-left: 10px; font-size: 0.95rem;">
+                            <p style="margin-bottom: 5px;"><strong>Type:</strong> Persistent Cookies</p>
+                            <p style="margin-bottom: 5px;"><strong>Administered by:</strong> Us</p>
+                            <p><strong>Purpose:</strong> These Cookies allow us to remember choices You make when You use the Website, such as remembering your login details or language preference. The purpose of these Cookies is to provide You with a more personal experience and to avoid You having to re-enter your preferences every time You use the Website.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Use of Your Personal Data</h3>
+                <p style="margin-bottom: 15px;">The Company may use Personal Data for the following purposes:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 10px;"><strong>To provide and maintain our Service</strong>, including to monitor the usage of our Service.</li>
+                    <li style="margin-bottom: 10px;"><strong>To manage Your Account:</strong> to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.</li>
+                    <li style="margin-bottom: 10px;"><strong>For the performance of a contract:</strong> the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased or of any other contract with Us through the Service.</li>
+                    <li style="margin-bottom: 10px;"><strong>To contact You:</strong> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application's push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.</li>
+                    <li style="margin-bottom: 10px;"><strong>To provide You</strong> with news, special offers, and general information about other goods, services and events which We offer that are similar to those that you have already purchased or inquired about unless You have opted not to receive such information.</li>
+                    <li style="margin-bottom: 10px;"><strong>To manage Your requests:</strong> To attend and manage Your requests to Us.</li>
+                    <li style="margin-bottom: 10px;"><strong>For business transfers:</strong> We may use Your information to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding, in which Personal Data held by Us about our Service users is among the assets transferred.</li>
+                    <li><strong>For other purposes</strong>: We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience.</li>
+                </ul>
+                
+                <p style="margin-bottom: 15px; margin-top: 20px;"><strong>We may share Your personal information in the following situations:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 10px;"><strong>With Service Providers:</strong> We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.</li>
+                    <li style="margin-bottom: 10px;"><strong>For business transfers:</strong> We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.</li>
+                    <li style="margin-bottom: 10px;"><strong>With Affiliates:</strong> We may share Your information with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.</li>
+                    <li style="margin-bottom: 10px;"><strong>With business partners:</strong> We may share Your information with Our business partners to offer You certain products, services or promotions.</li>
+                    <li style="margin-bottom: 10px;"><strong>With other users:</strong> when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.</li>
+                    <li><strong>With Your consent</strong>: We may disclose Your personal information for any other purpose with Your consent.</li>
+                </ul>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Retention of Your Personal Data</h3>
+                <p style="margin-bottom: 15px;">The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.</p>
+                <p style="margin-bottom: 20px;">The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer periods.</p>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Transfer of Your Personal Data</h3>
+                <p style="margin-bottom: 15px;">Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ from those from Your jurisdiction.</p>
+                <p style="margin-bottom: 15px;">Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer.</p>
+                <p style="margin-bottom: 20px;">The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.</p>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Delete Your Personal Data</h3>
+                <p style="margin-bottom: 15px;">You have the right to delete or request that We assist in deleting the Personal Data that We have collected about You.</p>
+                <p style="margin-bottom: 15px;">Our Service may give You the ability to delete certain information about You from within the Service.</p>
+                <p style="margin-bottom: 15px;">You may update, amend, or delete Your information at any time by signing in to Your Account, if you have one, and visiting the account settings section that allows you to manage Your personal information. You may also contact Us to request access to, correct, or delete any personal information that You have provided to Us.</p>
+                <p style="margin-bottom: 20px;">Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so.</p>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Disclosure of Your Personal Data</h3>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">Business Transactions</h4>
+                <p style="margin-bottom: 20px;">If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.</p>
+
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">Law enforcement</h4>
+                <p style="margin-bottom: 20px;">Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).</p>
+
+                <h4 style="margin-top: 20px; margin-bottom: 15px;">Other legal requirements</h4>
+                <p style="margin-bottom: 15px;">The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;">Comply with a legal obligation</li>
+                    <li style="margin-bottom: 8px;">Protect and defend the rights or property of the Company</li>
+                    <li style="margin-bottom: 8px;">Prevent or investigate possible wrongdoing in connection with the Service</li>
+                    <li style="margin-bottom: 8px;">Protect the personal safety of Users of the Service or the public</li>
+                    <li>Protect against legal liability</li>
+                </ul>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Security of Your Personal Data</h3>
+                <p style="margin-bottom: 20px;">The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially reasonable means to protect Your Personal Data, We cannot guarantee its absolute security.</p>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">Children's Privacy</h2>
+                <p style="margin-bottom: 15px;">Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.</p>
+                <p style="margin-bottom: 20px;">If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.</p>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">Links to Other Websites</h2>
+                <p style="margin-bottom: 15px;">Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.</p>
+                <p style="margin-bottom: 20px;">We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.</p>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">Changes to this Privacy Policy</h2>
+                <p style="margin-bottom: 15px;">We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.</p>
+                <p style="margin-bottom: 15px;">We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the "Last updated" date at the top of this Privacy Policy.</p>
+                <p style="margin-bottom: 20px;">You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">Contact Us</h2>
+                <p style="margin-bottom: 15px;">If you have any questions about this Privacy Policy, You can contact us:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>By mail:</strong> Maharashtra, India</li>
+                    <li><strong>By email:</strong> support@fincalcpro.com</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-calculator"></i> FinCalc Pro</h2>
+                    <p>Your trusted partner for financial planning and investment calculations.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="#" data-page="home">Home</a></li>
+                            <li><a href="#" data-page="about">About Us</a></li>
+                            <li><a href="#" data-page="services">Services</a></li>
+                            <li><a href="#" data-page="blogs">Blogs</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Calculators</h3>
+                        <ul>
+                            <li><a href="#" data-page="sip-calculator">SIP Calculator</a></li>
+                            <li><a href="#" data-page="swp-calculator">SWP Calculator</a></li>
+                            <li><a href="#" data-page="emi-calculator">EMI Calculator</a></li>
+                            <li><a href="#" data-page="retirement-planner">Retirement Planner</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Support</h3>
+                        <ul>
+                            <li><a href="#" data-page="contact">Contact Us</a></li>
+                            <li><a href="#" data-page="privacy-policy">Privacy Policy</a></li>
+                            <li><a href="#" data-page="terms-of-service">Terms of Service</a></li>
+                            <li><a href="#" data-page="faqs">FAQs</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 FinCalc Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+<script>
+    // Navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Page navigation
+        const navLinks = document.querySelectorAll('.nav-link, .footer-column a, .logo');
+        const pages = document.querySelectorAll('.page');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+                
+                if (!targetPage) return;
+                
+                const targetElement = document.getElementById(targetPage);
+                if (!targetElement) {
+                    console.error('Page not found:', targetPage);
+                    return;
+                }
+                
+                // Update active nav link
+                navLinks.forEach(navLink => {
+                    navLink.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Hide all pages
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show target page
+                targetElement.classList.add('active');
+                
+                // Close mobile menu if open
+                navMenu.classList.remove('active');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+        
+        // Calculator tabs on home page
+        const calcTabs = document.querySelectorAll('.calc-tab');
+        const calculatorContainers = document.querySelectorAll('.calculator-container');
+        
+        calcTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const calcType = tab.getAttribute('data-calc');
+                
+                // Update active tab
+                calcTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding calculator
+                calculatorContainers.forEach(container => {
+                    container.style.display = 'none';
+                });
+                
+                document.querySelector(`.${calcType}-calc`).style.display = 'flex';
+            });
+        });
+        
+        // FAQ toggle functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                
+                // Toggle answer visibility
+                if (answer.style.display === 'block') {
+                    answer.style.display = 'none';
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                } else {
+                    answer.style.display = 'block';
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            });
+        });
+        
+        // Initialize FAQ answers as hidden
+        document.querySelectorAll('.faq-answer').forEach(answer => {
+            answer.style.display = 'none';
+        });
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return '₹' + amount.toLocaleString('en-IN');
+        }
+
+        // SIP Calculation Logic
+        function calculateSIP() {
+            const monthlyInvestment = parseFloat(document.getElementById('sip-monthly').value) || 0;
+            const annualReturn = parseFloat(document.getElementById('sip-return').value) || 0;
+            const years = parseFloat(document.getElementById('sip-period').value) || 0;
+            
+            const monthlyReturn = annualReturn / 100 / 12;
+            const months = years * 12;
+            
+            // Future Value of SIP formula: FV = P * [((1 + r)^n - 1) / r] * (1 + r)
+            let futureValue = 0;
+            if (monthlyReturn > 0) {
+                futureValue = monthlyInvestment * 
+                    ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * 
+                    (1 + monthlyReturn);
+            } else {
+                futureValue = monthlyInvestment * months;
+            }
+            
+            const investedAmount = monthlyInvestment * months;
+            const returns = futureValue - investedAmount;
+            
+            // Update UI
+            document.getElementById('sip-invested').textContent = formatCurrency(investedAmount);
+            document.getElementById('sip-returns').textContent = formatCurrency(returns);
+            document.getElementById('sip-total').textContent = formatCurrency(futureValue);
+            
+            updateSIPChart(monthlyInvestment, annualReturn, years);
+            updateSIPDonutChart(investedAmount, returns);
+        }
+
+        // SWP Calculation Logic
+        function calculateSWP() {
+            const initialInvestment = parseFloat(document.getElementById('swp-investment').value) || 0;
+            const monthlyWithdrawal = parseFloat(document.getElementById('swp-monthly').value) || 0;
+            const annualReturn = parseFloat(document.getElementById('swp-return').value) || 0;
+            const years = parseFloat(document.getElementById('swp-period').value) || 0;
+            
+            const monthlyReturn = annualReturn / 100 / 12;
+            const months = years * 12;
+            
+            let remainingCorpus = initialInvestment;
+            let totalWithdrawals = 0;
+            
+            // Calculate remaining corpus after withdrawals
+            for (let i = 0; i < months; i++) {
+                // Add monthly return
+                remainingCorpus *= (1 + monthlyReturn);
+                // Subtract monthly withdrawal
+                if (remainingCorpus > monthlyWithdrawal) {
+                    remainingCorpus -= monthlyWithdrawal;
+                    totalWithdrawals += monthlyWithdrawal;
+                } else {
+                    totalWithdrawals += remainingCorpus;
+                    remainingCorpus = 0;
+                    break;
+                }
+            }
+            
+            const totalReturns = totalWithdrawals + remainingCorpus - initialInvestment;
+            
+            // Update UI
+            document.getElementById('swp-withdrawals').textContent = formatCurrency(totalWithdrawals);
+            document.getElementById('swp-remaining').textContent = formatCurrency(remainingCorpus);
+            document.getElementById('swp-total').textContent = formatCurrency(totalWithdrawals + remainingCorpus);
+            
+            updateSWPChart(initialInvestment, monthlyWithdrawal, annualReturn, years);
+            updateSWPDonutChart(initialInvestment, totalReturns);
+        }
+
+        // Page-level SIP Calculation (SIP Page)
+        function calculateSIPPage() {
+            const monthlyInvestment = parseFloat(document.getElementById('sip-page-monthly').value) || 0;
+            const annualReturn = parseFloat(document.getElementById('sip-page-return').value) || 0;
+            const years = parseFloat(document.getElementById('sip-page-period').value) || 0;
+
+            const monthlyReturn = annualReturn / 100 / 12;
+            const months = years * 12;
+
+            let futureValue = 0;
+            if (monthlyReturn > 0) {
+                futureValue = monthlyInvestment * 
+                    ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * 
+                    (1 + monthlyReturn);
+            } else {
+                futureValue = monthlyInvestment * months;
+            }
+
+            const investedAmount = monthlyInvestment * months;
+            const returns = futureValue - investedAmount;
+
+            // Update UI for SIP page
+            if (document.getElementById('sip-page-invested')) document.getElementById('sip-page-invested').textContent = formatCurrency(investedAmount);
+            if (document.getElementById('sip-page-returns')) document.getElementById('sip-page-returns').textContent = formatCurrency(returns);
+            if (document.getElementById('sip-page-total')) document.getElementById('sip-page-total').textContent = formatCurrency(futureValue);
+
+            // Reuse chart update
+            updateSIPChart(monthlyInvestment, annualReturn, years);
+        }
+
+        // Page-level SWP Calculation (SWP Page)
+        function calculateSWPPage() {
+            const initialInvestment = parseFloat(document.getElementById('swp-page-investment').value) || 0;
+            const monthlyWithdrawal = parseFloat(document.getElementById('swp-page-monthly').value) || 0;
+            const annualReturn = parseFloat(document.getElementById('swp-page-return').value) || 0;
+            const years = parseFloat(document.getElementById('swp-page-period').value) || 0;
+
+            const monthlyReturn = annualReturn / 100 / 12;
+            const months = years * 12;
+
+            let remainingCorpus = initialInvestment;
+            let totalWithdrawals = 0;
+
+            for (let i = 0; i < months; i++) {
+                remainingCorpus *= (1 + monthlyReturn);
+                if (remainingCorpus > monthlyWithdrawal) {
+                    remainingCorpus -= monthlyWithdrawal;
+                    totalWithdrawals += monthlyWithdrawal;
+                } else {
+                    totalWithdrawals += remainingCorpus;
+                    remainingCorpus = 0;
+                    break;
+                }
+            }
+
+            const totalReturns = totalWithdrawals + remainingCorpus - initialInvestment;
+
+            // Update UI for SWP page
+            if (document.getElementById('swp-page-withdrawals')) document.getElementById('swp-page-withdrawals').textContent = formatCurrency(totalWithdrawals);
+            if (document.getElementById('swp-page-remaining')) document.getElementById('swp-page-remaining').textContent = formatCurrency(remainingCorpus);
+            if (document.getElementById('swp-page-total')) document.getElementById('swp-page-total').textContent = formatCurrency(totalWithdrawals + remainingCorpus);
+
+            updateSWPChart(initialInvestment, monthlyWithdrawal, annualReturn, years);
+        }
+
+        // EMI Calculation Logic
+        function calculateEMI(loanAmount, interestRate, tenureYears, elementPrefix = '') {
+            const monthlyRate = interestRate / 100 / 12;
+            const tenureMonths = tenureYears * 12;
+            
+            let emi = 0;
+            if (monthlyRate > 0) {
+                emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) / 
+                      (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+            } else {
+                emi = loanAmount / tenureMonths;
+            }
+            
+            const totalPayment = emi * tenureMonths;
+            const totalInterest = totalPayment - loanAmount;
+            
+            // Update UI elements
+            if (document.getElementById(`${elementPrefix}emi`)) {
+                document.getElementById(`${elementPrefix}emi`).textContent = formatCurrency(Math.round(emi));
+                document.getElementById(`${elementPrefix}total-interest`).textContent = formatCurrency(Math.round(totalInterest));
+                document.getElementById(`${elementPrefix}total-payment`).textContent = formatCurrency(Math.round(totalPayment));
+                
+                // Update breakdown
+                if (document.getElementById(`${elementPrefix}principal`)) {
+                    document.getElementById(`${elementPrefix}principal`).textContent = formatCurrency(loanAmount);
+                }
+                if (document.getElementById(`${elementPrefix}interest`)) {
+                    document.getElementById(`${elementPrefix}interest`).textContent = formatCurrency(Math.round(totalInterest));
+                }
+                if (document.getElementById(`${elementPrefix}total`)) {
+                    document.getElementById(`${elementPrefix}total`).textContent = formatCurrency(Math.round(totalPayment));
+                }
+                
+                // Update donut chart if exists
+                if (elementPrefix === 'emi-page-') {
+                    updateEMIDonutChart(loanAmount, Math.round(totalInterest), 'emi-donut-chart');
+                }
+            }
+            
+            return {
+                emi: Math.round(emi),
+                totalInterest: Math.round(totalInterest),
+                totalPayment: Math.round(totalPayment)
+            };
+        }
+
+        // Home Loan Calculation
+        function calculateHomeLoan() {
+            const homePrice = parseFloat(document.getElementById('home-price').value) || 0;
+            const downPayment = parseFloat(document.getElementById('home-downpayment').value) || 0;
+            const interestRate = parseFloat(document.getElementById('home-interest-rate').value) || 0;
+            const tenure = parseFloat(document.getElementById('home-loan-tenure').value) || 0;
+            
+            const loanAmount = Math.max(0, homePrice - downPayment);
+            
+            // Update loan amount display
+            document.getElementById('home-loan-amount').value = loanAmount.toLocaleString('en-IN');
+            
+            // Calculate EMI
+            const result = calculateEMI(loanAmount, interestRate, tenure, 'home-');
+            
+            // Update breakdown displays
+            document.getElementById('home-principal').textContent = formatCurrency(homePrice);
+            document.getElementById('home-downpayment-display').textContent = formatCurrency(downPayment);
+            document.getElementById('home-loan-amount-display').textContent = formatCurrency(loanAmount);
+            
+            updateLoanChart(loanAmount, result.totalInterest, 'home-chart');
+        }
+
+        // Car Loan Calculation
+        function calculateCarLoan() {
+            const carPrice = parseFloat(document.getElementById('car-price').value) || 0;
+            const downPayment = parseFloat(document.getElementById('car-downpayment').value) || 0;
+            const interestRate = parseFloat(document.getElementById('car-interest-rate').value) || 0;
+            const tenure = parseFloat(document.getElementById('car-loan-tenure').value) || 0;
+            
+            const loanAmount = Math.max(0, carPrice - downPayment);
+            
+            // Update loan amount display
+            document.getElementById('car-loan-amount').value = loanAmount.toLocaleString('en-IN');
+            
+            // Calculate EMI
+            const result = calculateEMI(loanAmount, interestRate, tenure, 'car-');
+            
+            // Update breakdown displays
+            document.getElementById('car-principal').textContent = formatCurrency(carPrice);
+            document.getElementById('car-downpayment-display').textContent = formatCurrency(downPayment);
+            document.getElementById('car-loan-amount-display').textContent = formatCurrency(loanAmount);
+            
+            updateLoanChart(loanAmount, result.totalInterest, 'car-chart');
+        }
+
+        // Bike Loan Calculation
+        function calculateBikeLoan() {
+            const bikePrice = parseFloat(document.getElementById('bike-price').value) || 0;
+            const downPayment = parseFloat(document.getElementById('bike-downpayment').value) || 0;
+            const interestRate = parseFloat(document.getElementById('bike-interest-rate').value) || 0;
+            const tenure = parseFloat(document.getElementById('bike-loan-tenure').value) || 0;
+            
+            const loanAmount = Math.max(0, bikePrice - downPayment);
+            
+            // Update loan amount display
+            document.getElementById('bike-loan-amount').value = loanAmount.toLocaleString('en-IN');
+            
+            // Calculate EMI
+            const result = calculateEMI(loanAmount, interestRate, tenure, 'bike-');
+            
+            // Update breakdown displays
+            document.getElementById('bike-principal').textContent = formatCurrency(bikePrice);
+            document.getElementById('bike-downpayment-display').textContent = formatCurrency(downPayment);
+            document.getElementById('bike-loan-amount-display').textContent = formatCurrency(loanAmount);
+            
+            updateLoanChart(loanAmount, result.totalInterest, 'bike-chart');
+        }
+
+        // Retirement Planning Calculation
+        function calculateRetirement() {
+            const currentAge = parseFloat(document.getElementById('retirement-current-age').value) || 0;
+            const retirementAge = parseFloat(document.getElementById('retirement-retirement-age').value) || 0;
+            const lifeExpectancy = parseFloat(document.getElementById('retirement-life-expectancy').value) || 0;
+            const currentMonthlyExpenses = parseFloat(document.getElementById('retirement-monthly-expenses').value) || 0;
+            const inflation = parseFloat(document.getElementById('retirement-inflation').value) || 0;
+            const expectedReturn = parseFloat(document.getElementById('retirement-return').value) || 0;
+            const currentSavings = parseFloat(document.getElementById('retirement-current-savings').value) || 0;
+            
+            const yearsToRetirement = retirementAge - currentAge;
+            const retirementYears = lifeExpectancy - retirementAge;
+            
+            // Calculate future monthly expenses at retirement
+            const futureMonthlyExpenses = currentMonthlyExpenses * Math.pow(1 + inflation/100, yearsToRetirement);
+            
+            // Calculate retirement corpus needed (using 4% withdrawal rule)
+            const annualWithdrawal = futureMonthlyExpenses * 12;
+            const retirementCorpus = annualWithdrawal * 25; // 4% rule: corpus = annual expenses * 25
+            
+            // Calculate future value of current savings
+            const futureValueOfSavings = currentSavings * Math.pow(1 + expectedReturn/100, yearsToRetirement);
+            
+            // Calculate additional corpus needed
+            const additionalCorpusNeeded = Math.max(0, retirementCorpus - futureValueOfSavings);
+            
+            // Calculate monthly savings required
+            const monthlyRate = expectedReturn / 100 / 12;
+            const monthsToRetirement = yearsToRetirement * 12;
+            
+            let monthlySavings = 0;
+            if (monthlyRate > 0 && monthsToRetirement > 0) {
+                monthlySavings = additionalCorpusNeeded * monthlyRate / 
+                               (Math.pow(1 + monthlyRate, monthsToRetirement) - 1);
+            } else if (monthsToRetirement > 0) {
+                monthlySavings = additionalCorpusNeeded / monthsToRetirement;
+            }
+            
+            // Update UI
+            document.getElementById('retirement-corpus').textContent = formatCurrency(Math.round(retirementCorpus));
+            document.getElementById('retirement-monthly-savings').textContent = formatCurrency(Math.round(monthlySavings));
+            document.getElementById('retirement-years').textContent = yearsToRetirement;
+        }
+
+        // Chart update functions
+        function updateSIPChart(monthlyInvestment, annualReturn, years) {
+            const chart = document.getElementById('sip-chart');
+            if (!chart) return;
+            
+            chart.innerHTML = '';
+            const monthlyReturn = annualReturn / 100 / 12;
+            const maxBars = Math.min(10, years);
+            const step = Math.max(1, Math.ceil(years / maxBars));
+            
+            for (let year = step; year <= years; year += step) {
+                const months = year * 12;
+                let futureValue = 0;
+                if (monthlyReturn > 0) {
+                    futureValue = monthlyInvestment * 
+                        ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * 
+                        (1 + monthlyReturn);
+                } else {
+                    futureValue = monthlyInvestment * months;
+                }
+                
+                // Calculate height as percentage of max value
+                const maxValue = monthlyInvestment * months * 5;
+                const barHeight = (futureValue / maxValue) * 100;
+                
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${Math.min(barHeight, 95)}%`;
+                bar.title = `Year ${year}: ${formatCurrency(Math.round(futureValue))}`;
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = `Y${year}`;
+                
+                bar.appendChild(label);
+                chart.appendChild(bar);
+            }
+        }
+
+        function updateSWPChart(initialInvestment, monthlyWithdrawal, annualReturn, years) {
+            const chart = document.getElementById('swp-chart');
+            if (!chart) return;
+            
+            chart.innerHTML = '';
+            const monthlyReturn = annualReturn / 100 / 12;
+            const months = years * 12;
+            const maxBars = Math.min(10, years);
+            const step = Math.max(1, Math.ceil(years / maxBars));
+            
+            let corpus = initialInvestment;
+            const dataPoints = [];
+            
+            for (let year = 1; year <= years; year++) {
+                for (let month = 1; month <= 12; month++) {
+                    corpus *= (1 + monthlyReturn);
+                    if (corpus > monthlyWithdrawal) {
+                        corpus -= monthlyWithdrawal;
+                    } else {
+                        corpus = 0;
+                        break;
+                    }
+                }
+                
+                if (year % step === 0 || year === years) {
+                    dataPoints.push({year, value: corpus});
+                }
+                
+                if (corpus <= 0) break;
+            }
+            
+            const maxValue = Math.max(...dataPoints.map(d => d.value), initialInvestment);
+            
+            dataPoints.forEach(data => {
+                const barHeight = (data.value / maxValue) * 100;
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${Math.min(barHeight, 95)}%`;
+                bar.title = `Year ${data.year}: ${formatCurrency(Math.round(data.value))}`;
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = `Y${data.year}`;
+                
+                bar.appendChild(label);
+                chart.appendChild(bar);
+            });
+        }
+
+        // Store Chart.js instances globally
+        var chartInstances = {};
+
+        // SIP Donut Chart
+        function updateSIPDonutChart(invested, returns) {
+            const chartContainer = document.getElementById('sip-donut-chart');
+            if (!chartContainer) return;
+
+            chartContainer.innerHTML = '';
+            const canvas = document.createElement('canvas');
+            chartContainer.appendChild(canvas);
+
+            if (chartInstances['sip-donut']) chartInstances['sip-donut'].destroy();
+
+            chartInstances['sip-donut'] = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Invested', 'Est. Returns'],
+                    datasets: [{
+                        data: [invested, returns],
+                        backgroundColor: ['#667eea', '#4edf82'],
+                        hoverBackgroundColor: ['#5568d3', '#3bc970'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15 } },
+                        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + formatCurrency(ctx.parsed) } }
+                    }
+                }
+            });
+        }
+
+        // SWP Donut Chart
+        function updateSWPDonutChart(invested, returns) {
+            const chartContainer = document.getElementById('swp-donut-chart');
+            if (!chartContainer) return;
+
+            chartContainer.innerHTML = '';
+            const canvas = document.createElement('canvas');
+            chartContainer.appendChild(canvas);
+
+            if (chartInstances['swp-donut']) chartInstances['swp-donut'].destroy();
+
+            chartInstances['swp-donut'] = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Initial Investment', 'Est. Returns'],
+                    datasets: [{
+                        data: [invested, returns],
+                        backgroundColor: ['#667eea', '#ff9f43'],
+                        hoverBackgroundColor: ['#5568d3', '#ff8c2a'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15 } },
+                        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + formatCurrency(ctx.parsed) } }
+                    }
+                }
+            });
+        }
+
+        // EMI Donut Chart
+        function updateEMIDonutChart(principal, interest, chartId) {
+            const chartContainer = document.getElementById(chartId);
+            if (!chartContainer) return;
+
+            chartContainer.innerHTML = '';
+            const canvas = document.createElement('canvas');
+            chartContainer.appendChild(canvas);
+
+            if (chartInstances[chartId]) chartInstances[chartId].destroy();
+
+            chartInstances[chartId] = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [principal, interest],
+                        backgroundColor: ['#667eea', '#ff7e5f'],
+                        hoverBackgroundColor: ['#5568d3', '#ff6b4a'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15 } },
+                        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + formatCurrency(ctx.parsed) } }
+                    }
+                }
+            });
+        }
+
+        // Store Chart.js instances for loan charts
+        var loanCharts = {};
+
+        function updateLoanChart(principal, interest, chartId) {
+            const chartContainer = document.getElementById(chartId);
+            if (!chartContainer) return;
+
+            // Clear container
+            chartContainer.innerHTML = '';
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            chartContainer.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (loanCharts[chartId] && typeof loanCharts[chartId].destroy === 'function') {
+                loanCharts[chartId].destroy();
+            }
+
+            // Ensure Chart is available
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js library not loaded');
+                return;
+            }
+
+            // Create new donut chart
+            loanCharts[chartId] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [principal, interest],
+                        backgroundColor: ['#667eea', '#ff7e5f'],
+                        hoverBackgroundColor: ['#5568d3', '#ff6b4a'],
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 12 },
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + formatCurrency(context.parsed);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Down payment calculation for loan calculators
+        function updateLoanAmount(priceId, downpaymentId, loanAmountId, calculateFunction) {
+            const price = document.getElementById(priceId);
+            const downpayment = document.getElementById(downpaymentId);
+            const loanAmount = document.getElementById(loanAmountId);
+            
+            function calculateLoanAmount() {
+                const priceValue = parseFloat(price.value) || 0;
+                const downpaymentValue = parseFloat(downpayment.value) || 0;
+                const maxDownpayment = priceValue;
+                const actualDownpayment = Math.min(downpaymentValue, maxDownpayment);
+                
+                if (downpaymentValue > maxDownpayment) {
+                    downpayment.value = maxDownpayment;
+                }
+                
+                const calculatedLoanAmount = Math.max(0, priceValue - actualDownpayment);
+                loanAmount.value = calculatedLoanAmount.toLocaleString('en-IN');
+                
+                // Update display values
+                const displayElements = document.querySelectorAll(`#${priceId}-display, #${loanAmountId}-display, #${downpaymentId}-display`);
+                displayElements.forEach(el => {
+                    if (el.id === `${priceId}-display`) {
+                        el.textContent = formatCurrency(priceValue);
+                    } else if (el.id === `${downpaymentId}-display`) {
+                        el.textContent = formatCurrency(actualDownpayment);
+                    } else if (el.id === `${loanAmountId}-display`) {
+                        el.textContent = formatCurrency(calculatedLoanAmount);
+                    }
+                });
+                
+                // Trigger calculation
+                calculateFunction();
+            }
+            
+            price.addEventListener('input', calculateLoanAmount);
+            downpayment.addEventListener('input', calculateLoanAmount);
+            
+            // Initialize
+            calculateLoanAmount();
+        }
+
+        // Initialize all calculators with event listeners
+        function initializeCalculators() {
+            // SIP Calculator
+            const sipInputs = ['sip-monthly', 'sip-return', 'sip-period'];
+            sipInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateSIP();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateSIP();
+                    });
+                }
+            });
+
+            // SWP Calculator
+            const swpInputs = ['swp-investment', 'swp-monthly', 'swp-return', 'swp-period'];
+            swpInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateSWP();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateSWP();
+                    });
+                }
+            });
+
+            // SIP Page Calculator
+            const sipPageInputs = ['sip-page-monthly', 'sip-page-return', 'sip-page-period'];
+            sipPageInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateSIPPage();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateSIPPage();
+                    });
+                }
+            });
+
+            // SWP Page Calculator
+            const swpPageInputs = ['swp-page-investment', 'swp-page-monthly', 'swp-page-return', 'swp-page-period'];
+            swpPageInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateSWPPage();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateSWPPage();
+                    });
+                }
+            });
+
+            // Home Loan Calculator
+            const homeInputs = ['home-price', 'home-downpayment', 'home-interest-rate', 'home-loan-tenure'];
+            homeInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateHomeLoan();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateHomeLoan();
+                    });
+                }
+            });
+
+            // Car Loan Calculator
+            const carInputs = ['car-price', 'car-downpayment', 'car-interest-rate', 'car-loan-tenure'];
+            carInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateCarLoan();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateCarLoan();
+                    });
+                }
+            });
+
+            // Bike Loan Calculator
+            const bikeInputs = ['bike-price', 'bike-downpayment', 'bike-interest-rate', 'bike-loan-tenure'];
+            bikeInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateBikeLoan();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateBikeLoan();
+                    });
+                }
+            });
+
+            // Retirement Planner
+            const retirementInputs = [
+                'retirement-current-age', 'retirement-retirement-age', 'retirement-life-expectancy',
+                'retirement-monthly-expenses', 'retirement-inflation', 'retirement-return', 'retirement-current-savings'
+            ];
+            
+            retirementInputs.forEach(id => {
+                const input = document.getElementById(id);
+                const slider = document.getElementById(`${id}-slider`);
+                
+                if (input && slider) {
+                    input.addEventListener('input', function() {
+                        slider.value = this.value;
+                        calculateRetirement();
+                    });
+                    
+                    slider.addEventListener('input', function() {
+                        input.value = this.value;
+                        calculateRetirement();
+                    });
+                }
+            });
+
+            // Initialize down payment calculations
+            updateLoanAmount('home-price', 'home-downpayment', 'home-loan-amount', calculateHomeLoan);
+            updateLoanAmount('car-price', 'car-downpayment', 'car-loan-amount', calculateCarLoan);
+            updateLoanAmount('bike-price', 'bike-downpayment', 'bike-loan-amount', calculateBikeLoan);
+
+            // Perform initial calculations
+            calculateSIP();
+            calculateSWP();
+            calculateSIPPage();
+            calculateSWPPage();
+            calculateHomeLoan();
+            calculateCarLoan();
+            calculateBikeLoan();
+            calculateRetirement();
+        }
+
+        // Initialize all calculators
+        initializeCalculators();
+        
+        console.log("Financial Calculator Suite Loaded");
+        console.log("Includes: SIP, SWP, Home Loan, Car Loan, and Bike Loan Calculators with complete logic");
+    });
+</script>
+</body>
+</html>
