@@ -6,7 +6,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>finCal - Financial Calculator Suite</title>
+    <title>finCal - Financial EMI , SIP , SWP Calculator </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -30,13 +30,14 @@
             background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1400px;
             width: 100%;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
 
         /* Header Styles */
@@ -76,20 +77,22 @@
             font-size: 1.5rem;
             color: var(--primary);
             cursor: pointer;
+            z-index: 1001;
         }
 
         .nav-menu {
             display: flex;
-            gap: 25px;
+            gap: 15px;
         }
 
         .nav-link {
             color: var(--dark);
             text-decoration: none;
             font-weight: 600;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             transition: all 0.3s;
+            font-size: 0.95rem;
         }
 
         .nav-link:hover, .nav-link.active {
@@ -101,7 +104,7 @@
         .page {
             display: none;
             min-height: 80vh;
-            padding: 40px 0;
+            padding: 30px 0;
         }
 
         .page.active {
@@ -110,31 +113,33 @@
 
         .page-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             color: white;
+            padding: 0 10px;
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 10px;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .page-header p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
+            line-height: 1.5;
         }
 
         /* Calculator Styles */
         .calculator-tabs {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 50px;
+            border-radius: 15px;
             padding: 10px;
             max-width: 900px;
             margin-left: auto;
@@ -142,17 +147,21 @@
         }
 
         .calc-tab {
-            padding: 12px 25px;
+            padding: 10px 18px;
             background: transparent;
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
         }
 
         .calc-tab:hover {
@@ -168,7 +177,7 @@
         .calculator-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
+            gap: 20px;
             justify-content: center;
         }
 
@@ -176,10 +185,11 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 30px;
+            padding: 25px;
             flex: 1;
-            min-width: 350px;
+            min-width: 300px;
             max-width: 500px;
+            width: 100%;
         }
 
         .calculator h2 {
@@ -190,10 +200,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.4rem;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .input-group label {
@@ -201,6 +212,7 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #555;
+            font-size: 0.95rem;
         }
 
         .input-group input, .input-group select {
@@ -249,16 +261,16 @@
         .results {
             background: var(--light);
             border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
+            padding: 18px;
+            margin-top: 25px;
             border-left: 4px solid var(--primary);
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #eaeaea;
         }
 
@@ -271,12 +283,13 @@
         .result-label {
             font-weight: 600;
             color: #555;
+            font-size: 0.95rem;
         }
 
         .result-value {
             font-weight: 700;
             color: var(--primary);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .highlight {
@@ -290,14 +303,17 @@
             display: flex;
             margin-bottom: 20px;
             border-bottom: 1px solid #e0e0e0;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .tab {
-            padding: 10px 20px;
+            padding: 10px 18px;
             cursor: pointer;
             font-weight: 600;
             color: var(--gray);
             transition: all 0.3s;
+            font-size: 0.95rem;
         }
 
         .tab.active {
@@ -314,9 +330,15 @@
         }
 
         .chart-container {
-            margin-top: 30px;
-            height: 250px;
+            margin-top: 25px;
+            height: 220px;
             position: relative;
+        }
+
+        .chart-container h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: var(--primary);
         }
 
         .chart {
@@ -332,7 +354,7 @@
         }
 
         .chart-bar {
-            width: 40px;
+            width: 35px;
             background: linear-gradient(to top, var(--primary), var(--secondary));
             border-radius: 5px 5px 0 0;
             position: relative;
@@ -346,7 +368,7 @@
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
         }
 
@@ -372,15 +394,16 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            margin-bottom: 30px;
+            padding: 30px;
+            margin-bottom: 25px;
         }
 
         .content-page h2 {
             color: var(--primary);
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             padding-bottom: 10px;
             border-bottom: 2px solid #f0f0f0;
+            font-size: 1.5rem;
         }
 
         .content-page p {
@@ -425,38 +448,38 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            margin-top: 30px;
+            padding: 25px;
+            margin-top: 25px;
             width: 100%;
         }
 
         .comparison-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .comparison-header h2 {
             color: var(--primary);
-            font-size: 1.8rem;
+            font-size: 1.6rem;
         }
 
         .comparison-content {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
+            gap: 25px;
         }
 
         .comparison-chart {
             flex: 1;
-            min-width: 300px;
+            min-width: 280px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
         .comparison-donut {
-            width: 220px;
-            height: 220px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             background: conic-gradient(
                 var(--primary) 0% 54%,
@@ -465,14 +488,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px 0;
+            margin: 15px 0;
             position: relative;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .donut-inner {
-            width: 150px;
-            height: 150px;
+            width: 130px;
+            height: 130px;
             background: white;
             border-radius: 50%;
             display: flex;
@@ -483,13 +506,13 @@
         }
 
         .donut-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary);
         }
 
         .donut-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
         }
 
@@ -497,29 +520,29 @@
             display: flex;
             justify-content: space-around;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .stat {
             text-align: center;
-            padding: 10px;
+            padding: 8px;
         }
 
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary);
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
             margin-top: 5px;
         }
 
         .comparison-info {
             flex: 1;
-            min-width: 300px;
+            min-width: 280px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -528,8 +551,8 @@
         .info-box {
             background: var(--light);
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 18px;
             border-left: 4px solid var(--primary);
         }
 
@@ -547,6 +570,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.2rem;
         }
 
         .info-box.swp h3 {
@@ -559,13 +583,14 @@
         }
 
         .invest-now {
-            margin-top: 30px;
+            margin-top: 25px;
             text-align: center;
         }
 
         .invest-now h3 {
             margin-bottom: 15px;
             color: var(--primary);
+            font-size: 1.2rem;
         }
 
         .broker-buttons {
@@ -579,7 +604,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 20px;
+            padding: 12px 18px;
             background: var(--primary);
             color: white;
             border: none;
@@ -588,6 +613,7 @@
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
+            font-size: 0.9rem;
         }
 
         .broker-btn:hover {
@@ -610,12 +636,12 @@
 
         /* Footer */
         footer {
-            margin-top: 50px;
+            margin-top: 40px;
             width: 100%;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             color: white;
         }
 
@@ -623,7 +649,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            gap: 30px;
+            gap: 25px;
         }
 
         .footer-logo {
@@ -636,21 +662,22 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.5rem;
         }
 
         .footer-links {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
+            gap: 25px;
         }
 
         .footer-column {
-            min-width: 150px;
+            min-width: 140px;
         }
 
         .footer-column h3 {
             margin-bottom: 15px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .footer-column ul {
@@ -665,6 +692,7 @@
             color: #e0e0e0;
             text-decoration: none;
             transition: color 0.3s;
+            font-size: 0.9rem;
         }
 
         .footer-column ul li a:hover {
@@ -673,15 +701,33 @@
 
         .copyright {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 25px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             color: #e0e0e0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            .calculator {
+                padding: 20px;
+            }
+            
+            .content-page {
+                padding: 25px;
+            }
+        }
+
         @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
             .nav-toggle {
                 display: block;
             }
@@ -697,6 +743,7 @@
                 box-shadow: 0 5px 15px rgba(0,0,0,0.1);
                 padding: 20px;
                 border-radius: 0 0 15px 15px;
+                gap: 10px;
             }
 
             .nav-menu.active {
@@ -709,6 +756,7 @@
             
             .calculator {
                 max-width: 100%;
+                padding: 20px;
             }
             
             .footer-content {
@@ -731,6 +779,151 @@
             .calc-tab {
                 border-radius: 10px;
                 justify-content: center;
+            }
+            
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .page-header p {
+                font-size: 0.95rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .chart-bar {
+                width: 30px;
+            }
+            
+            .comparison-donut {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .donut-inner {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .calculator {
+                padding: 15px;
+                min-width: 280px;
+            }
+            
+            .content-page {
+                padding: 20px;
+            }
+            
+            .page-header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .page-header p {
+                font-size: 0.9rem;
+            }
+            
+            .calculator h2 {
+                font-size: 1.3rem;
+            }
+            
+            .input-group input, .input-group select {
+                padding: 10px 12px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .results {
+                padding: 15px;
+            }
+            
+            .chart-container {
+                height: 180px;
+            }
+            
+            .chart-bar {
+                width: 25px;
+            }
+            
+            .comparison-donut {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .donut-inner {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .donut-value {
+                font-size: 1.3rem;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            .logo i {
+                font-size: 1.5rem;
+            }
+            
+            .nav-link {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+            
+            .footer-column {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .calculator {
+                padding: 12px;
+            }
+            
+            .content-page {
+                padding: 15px;
+            }
+            
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .calculator h2 {
+                font-size: 1.2rem;
+            }
+            
+            .chart-container {
+                height: 160px;
+            }
+            
+            .chart-bar {
+                width: 20px;
+            }
+            
+            .comparison-donut {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .donut-inner {
+                width: 85px;
+                height: 85px;
+            }
+            
+            .donut-value {
+                font-size: 1.1rem;
+            }
+            
+            .stat-value {
+                font-size: 1.1rem;
             }
         }
     </style>
@@ -1731,7 +1924,7 @@
                 <h2>Contact Information</h2>
                 <p>If you have any questions, suggestions, or feedback, please don't hesitate to reach out to us:</p>
                 <ul>
-                    <li><strong>Email:</strong> support@fincalcpro.com</li>
+                    <li><strong>Email:</strong> support@fincal.com</li>
                     <li><strong>Phone:</strong> +91-9876543210</li>
                     <li><strong>Address:</strong> 123 Financial District, Mumbai, India - 400001</li>
                 </ul>
@@ -1873,7 +2066,7 @@
                         <div class="results">
                             <div class="result-item">
                                 <span class="result-label"><i class="fas fa-envelope"></i> Email</span>
-                                <span class="result-value">support@fincalcpro.com</span>
+                                <span class="result-value">support@fincal.com</span>
                             </div>
                             <div class="result-item">
                                 <span class="result-label"><i class="fas fa-phone"></i> Phone</span>
@@ -2127,7 +2320,7 @@
                 <p style="margin-bottom: 15px;">If you have any questions about this Privacy Policy, You can contact us:</p>
                 <ul style="margin-left: 20px; margin-bottom: 20px;">
                     <li><strong>By mail:</strong> Maharashtra, India</li>
-                    <li><strong>By email:</strong> support@fincalcpro.com</li>
+                    <li><strong>By email:</strong>alliabhishek138@gmail.com</li>
                 </ul>
             </div>
         </div>
@@ -2172,7 +2365,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 finCal. All rights reserved.</p>
+                <p>&copy; 2025 finCal. All rights reserved.</p>
             </div>
         </div>
     </footer>
