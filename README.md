@@ -26,7 +26,7 @@ cd "c:\Users\abhis\Desktop\sip calculator\swp-sip"
 python -m http.server 8000
 ```
 
-2. Open your browser and go to `http://localhost:8000`.
+2. Open your browser and go to `https://fincal.sbs/`.
 
 3. Use the top navigation or the home tabs to switch calculators. Adjust sliders or input values — charts and results update live.
 
@@ -64,7 +64,8 @@ License & attribution
  - This project uses libraries loaded from CDNs (Chart.js, Font Awesome). Review their licenses for redistribution.
 
 Contact
- - For questions, email: `support@fincalcpro.com`
+ - For questions, email: `alliabhishek138@gmail.com`
 
 ---
 Created/updated by the development toolchain in the workspace.
+
